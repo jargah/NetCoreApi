@@ -21,9 +21,22 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()   // Permitir cualquier dominio
+              .AllowAnyMethod()   // Permitir cualquier método (GET, POST, PUT, DELETE, etc.)
+              .AllowAnyHeader();  // Permitir cualquier encabezado (Authorization, Content-Type, etc.)
+    });
+});
+
 
 // Construir la aplicación
 var app = builder.Build();
+
+app.UseCors("AllowAll");
+
 
 // Middleware para validar la API Key
 app.UseMiddleware<Credentials>();
@@ -35,8 +48,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Redirigir HTTP a HTTPS
-app.UseHttpsRedirection();
 
 // Habilitar autorización (si se usa en el futuro)
 app.UseAuthorization();
